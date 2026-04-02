@@ -1,9 +1,9 @@
 {
-  "name": "ExamplePlugin",
+  "name": "Auto Sign",
   "version": "${version}",
-  "description": "Example implementation of a plugin for Lambda.",
-  "url": "https://github.com/lambda-client/ExamplePlugin",
-  "authors": [ "me", "you" ],
+  "description": "Adds an auto sign option to automate signs!",
+  "url": "https://github.com/RealZ4bra/Auto-Sign",
+  "authors": [ "Z4braReal", "" ],
   "main_class": "com.lambda.ExamplePlugin",
   "min_api_version": "3.3",
   "mixins": [ "mixins.ExamplePlugin.json" ],
