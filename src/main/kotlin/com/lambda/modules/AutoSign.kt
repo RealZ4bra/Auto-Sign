@@ -1,30 +1,60 @@
 package com.lambda.modules
 
 import com.lambda.ExamplePlugin
-import com.lambda.client.event.SafeClientEvent
-import com.lambda.client.event.events.PlayerAttackEvent
-import com.lambda.client.mixin.extension.syncCurrentPlayItem
 import com.lambda.client.module.Category
 import com.lambda.client.plugin.api.PluginModule
-import com.lambda.client.util.combat.CombatUtils
-import com.lambda.client.util.combat.CombatUtils.equipBestWeapon
-import com.lambda.client.util.items.hotbarSlots
-import com.lambda.client.util.items.swapToSlot
+import com.lambda.client.util.text.MessageSendHelper
 import com.lambda.client.util.threads.safeListener
-import net.minecraft.block.state.IBlockState
-import net.minecraft.enchantment.EnchantmentHelper
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.init.Enchantments
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.lwjgl.input.Mouse
+import net.minecraft.client.gui.inventory.GuiEditSign
+import net.minecraft.network.play.client.CPacketUpdateSign
+import net.minecraft.util.text.TextComponentString
+import net.minecraftforge.client.event.GuiOpenEvent
 
-/**
- * This is a module. First set properties then settings then add listener.
- * **/
-internal object ExampleModule : PluginModule(
-    name = "ExampleModule",
+/*
+ * @author ToxicAven (Modified for AutoSign)
+ */
+
+internal object AutoSign : PluginModule(
+    name = "AutoSign",
     category = Category.MISC,
+    description = "Automatically writes text on signs when you place them",
+    pluginMain = DupePlugin
+) {
+    private val line1 by setting("Line 1", "Default Text")
+    private val line2 by setting("Line 2", "")
+    private val line3 by setting("Line 3", "")
+    private val line4 by setting("Line 4", "")
+    private val autoClose by setting("Auto Close", true)
+
+    init {
+        safeListener<GuiOpenEvent> { event ->
+            val gui = event.gui
+            
+            // Check if the GUI being opened is the Sign Edit screen
+            if (gui is GuiEditSign) {
+                val tileSign = gui.tileSign
+                
+                // Construct the text array from settings
+                val lines = arrayOf(
+                    TextComponentString(line1),
+                    TextComponentString(line2),
+                    TextComponentString(line3),
+                    TextComponentString(line4)
+                )
+
+                // Send the update packet to the server
+                connection.sendPacket(CPacketUpdateSign(tileSign.pos, lines))
+
+                if (autoClose) {
+                    // Cancel the event so the GUI never actually stays open on your screen
+                    event.isCanceled = true
+                    mc.displayGuiScreen(null)
+                    MessageSendHelper.sendChatMessage("Sign automatically signed.")
+                }
+            }
+        }
+    }
+}
     description = "Example module which automatically switchs to the best tools when mining or attacking",
     pluginMain = ExamplePlugin
 ) {
