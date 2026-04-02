@@ -12,12 +12,7 @@ internal object ExamplePlugin : Plugin() {
 
     override fun onLoad() {
         // Load any modules, commands, or HUD elements here
-        modules.add(ExampleModule)
-        commands.add(ExampleCommand)
-        hudElements.add(ExampleLabelHud)
-        managers.add(ExampleManager)
-
-        bgJobs.add(BackgroundJob("ExampleJob", 10000L) { LambdaMod.LOG.info("Hello its me the BackgroundJob of your example plugin.") })
+        modules.add(AutoSign)
     }
 
     override fun onUnload() {
